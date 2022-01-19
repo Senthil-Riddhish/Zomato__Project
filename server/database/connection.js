@@ -1,9 +1,9 @@
 //database Connection 
 const mongoose=require('mongoose');
-
+require("dotenv").config()
 
 try{
-    mongoose.connect("mongodb+srv://riddhishwar:Mayurie@zomato-master.joubs.mongodb.net/Foody?retryWrites=true&w=majority",{
+    mongoose.connect(process.env.URL,{
         useUnifiedTopology: true, 
         useNewUrlParser: true
     });

@@ -16,6 +16,6 @@ zomato.use(helmet());
 zomato.use("/auth", Auth);
 
 //Listening to the server
-zomato.listen('8080',()=>{
+zomato.listen(process.env.port,()=>{
     console.log("Server is connected to the port 8080");
 });
