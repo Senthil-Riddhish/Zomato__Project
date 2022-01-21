@@ -10,7 +10,6 @@ const FoodSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: "Images"
     },
-    category: { type: String, required: true },
     addOns: [
         {
             type: mongoose.Types.ObjectId,

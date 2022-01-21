@@ -35,14 +35,14 @@ UserSchema.statics.findByEmailAndPassword = async({ email,phoneNumber })=>{
 
 UserSchema.pre("save",async function(next){
   console.log("inside save");
-  //if(!user.isModified("password"));
+  if(!user.isModified("password")) return next();;
   try{
     let hashPassword = await bcrypt.hash(this.password, saltRounds);
     this.password=hashPassword;
     console.log("no problem");
     return next();
   }catch(error){
-    return next(error);
+    return next();
   }
 });
 
