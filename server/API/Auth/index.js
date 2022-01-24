@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import passport from "passport";
 //Models
 import { UserModel } from "../../database/allModels";
-
+import { validateSignin, validateSignup } from "../../validation/auth";
 
 //create the routers
 const Router = express.Router();
@@ -20,8 +20,7 @@ const saltRounds = 5;
 console.log("inside");
 Router.post("/signup", async (req, res) => {
     try {
-        console.log("inside");
-        const { fullname, email, password, address, phoneNumber } = req.body.credentials;
+        await validateSignup(req.body.credentials);
         await UserModel.findByEmailAndPassword({ ...req.body.credentials });
         const create_User = await UserModel.create({ ...req.body.credentials });
         const token = create_User.jwtToken();
@@ -45,12 +44,13 @@ Router.post("/signup", async (req, res) => {
 
 Router.post("/signin", async (req, res) => {
     try {
+        await validateSignin(req.body.credentials);
         const { email, password } = req.body.credentials;
         const checkByEmail = await UserModel.findOne({ email });
         if (!checkByEmail) { res.status(500).json({ user: "Eial not found" }) }
         bcrypt.compare(password, checkByEmail.password).then(function (result) {
-            const token=checkByEmail.jwtToken();
-            if (result) { res.status(200).json({ token:token,message: "Successfully loggedin" }) }
+            const token = checkByEmail.jwtToken();
+            if (result) { res.status(200).json({ token: token, message: "Successfully loggedin" }) }
         });
     } catch (error) {
 
@@ -65,11 +65,11 @@ Router.post("/signin", async (req, res) => {
  * Method  : GET
  */
 
-Router.get("/google",passport.authenticate("google",{
+Router.get("/google", passport.authenticate("google", {
     scope: [
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email",
-      ]
+    ]
 }));
 
 /**
@@ -79,9 +79,9 @@ Router.get("/google",passport.authenticate("google",{
  * Access  : Public
  * Method  : GET
  */
-Router.get("/google/callback",passport.authenticate("google",{failureRedirect:"/"}),
-    (req,res)=>{
-        return res.status(200).json({token:req.session.passport.user.token,status:"success"})
+Router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/" }),
+    (req, res) => {
+        return res.status(200).json({ token: req.session.passport.user.token, status: "success" })
     }
 )
 export default Router;

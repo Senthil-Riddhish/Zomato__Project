@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, required: true },
     password: { type: String },
     address: [{ details: { type: String }, for: { type: String } }],
-    phoneNumber: [{ type: Number }],
+    phoneNumber:{ type: String},
   },
   {
     timestamps: true,
@@ -29,17 +29,13 @@ UserSchema.statics.findByEmailAndPassword = async({ email,phoneNumber })=>{
   if (checkbyEmail || checkbyPhone) {
     throw new Error("User already registered !!");
   }
-  console.log("no problem");
   return false;
 }
 
 UserSchema.pre("save",async function(next){
-  console.log("inside save");
-  if(!user.isModified("password")) return next();;
   try{
     let hashPassword = await bcrypt.hash(this.password, saltRounds);
     this.password=hashPassword;
-    console.log("no problem");
     return next();
   }catch(error){
     return next();
